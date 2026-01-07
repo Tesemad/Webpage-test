@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Multilingual Rental Application Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    /* ===============================
+       Base page styling
+       =============================== */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.5;
+      background: #f0f0f0; /* Light-gray background */
+    }
+
+    /* ===============================
+       Main form wrapper
+       =============================== */
+    .form-wrapper {
+      max-width: 900px;
+      margin: 40px auto 60px;
+      background: #ffffff;
+      padding: 20px 24px 28px;
+      border-radius: 12px; /* Soft rounded corners */
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    h1, h2 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin: 18px 0 10px;
+    }
+
+    fieldset {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 12px 12px 14px;
+      margin-bottom: 14px; /* Moderately compact spacing */
+      background: #fafafa;
+    }
+
+    legend {
+      font-weight: bold;
+      padding: 0 6px;
+      font-size: 14px;
+    }
+
+    label {
+      display: block;
+      margin-top: 6px;
+      font-size: 13px;
+      color: #222;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 6px 7px;
+      margin-top: 2px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 13px;
+    }
+
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+
+    .inline-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+
+    .inline-group > div {
+      flex: 1 1 200px;
+    }
+
+    /* ===============================
+       Sticky language dropdown (top-right, global)
+       =============================== */
+    .language-dropdown-container {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffff;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .language-label {
+      font-size: 16px;
+    }
+
+    .language-select {
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    /* ===============================
+       Language blocks
+       =============================== */
+    .lang-block {
+      display: none;
+    }
+
+    .lang-block.active {
+      display: block;
+    }
+
+    /* ===============================
+       Children section
+       =============================== */
+    .children-section {
+      margin-top: 8px;
+    }
+
+    .child-row {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      background: #fdfdfd;
+    }
+
+    .child-row .inline-group {
+      align-items: flex-end;
+    }
+
+    .remove-child-btn {
+      background: #cc0000;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .add-child-btn {
+      margin-top: 8px;
+      padding: 7px 12px;
+      background: #008000;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    /* ===============================
+       Submit section and buttons
+       =============================== */
+    .submit-section {
+      margin-top: 24px;
+      padding: 16px 14px 18px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+
+    .submit-buttons {
+      margin-top: 10px;
+    }
+
+    .submit-buttons button {
+      padding: 9px 16px;
+      margin: 6px 8px 6px 0;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .btn-print {
+      background: #444;
+      color: #fff;
+    }
+
+    .btn-submit {
+      background: #0066cc;
+      color: #fff;
+    }
+
+    .btn-reset {
+      background: #cc0000;
+      color: #fff;
+    }
+
+    .lang-submit-text {
+      display: none;
+      font-size: 13px;
+      color: #555;
+      margin-top: 8px;
+    }
+
+    .lang-submit-text.active {
+      display: block;
+    }
+
+    /* ===============================
+       Mobile adjustments
+       =============================== */
+    @media (max-width: 600px) {
+      body {
+        padding: 12px;
+      }
+
+      .form-wrapper {
+        margin-top: 60px;
+        padding: 16px 14px 20px;
+      }
+
+      .inline-group {
+        flex-direction: column;
+      }
+
+      .language-dropdown-container {
+        top: 0;
+        right: 0;
+        left: 0;
+        justify-content: flex-end;
+        border-radius: 0 0 8px 8px;
+        border-left: none;
+        border-right: none;
+      }
+
+      .language-select {
+        font-size: 14px;
+        padding: 7px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- =====================================
+     Sticky language dropdown (global)
+     ===================================== -->
+<div class="language-dropdown-container">
+  <label for="languageSelect" class="language-label">🌐</label>
+  <select id="languageSelect" class="language-select">
+    <option value="en">English</option>
+    <option value="am">አማርኛ</option>
+    <option value="om">Afaan Oromoo</option>
+    <option value="ti">ትግርኛ</option>
+    <option value="so">Soomaali</option>
+  </select>
+</div>
+
+<div class="form-wrapper">
+  <h1>Rental Application Form</h1>
+
+  <!-- =====================================
+       Unified form
+       ===================================== -->
+  <form id="rentalForm">
+    <!-- Hidden language field (native names) -->
+    <input type="hidden" name="Language Used" id="languageField" value="English">
+
+    <!-- ==========================
+         ENGLISH BLOCK
+         ========================== -->
+    <div class="lang-block active" data-lang-block="en">
+      <h2>Section 1: Applicant Information</h2>
+      <fieldset>
+        <legend>Applicant</legend>
+        <label>Full Name</label>
+        <input type="text" name="Applicant Full Name" required>
+
+        <div class="inline-group">
+          <div>
+            <label>Date of Birth</label>
+            <input type="date" name="Applicant Date of Birth">
+          </div>
+          <div>
+            <label>Gender</label>
+            <select name="Applicant Gender">
+              <option value="">Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+              <option>Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>Phone Number</label>
+            <input type="tel" name="Applicant Phone">
+          </div>
+          <div>
+            <label>Email</label>
+            <input type="email" name="Applicant Email">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>Section 2: Current Address</h2>
+      <fieldset>
+        <legend>Address</legend>
+        <label>Street Address</label>
+        <input type="text" name="Current Street Address">
+
+        <div class="inline-group">
+          <div>
+            <label>City</label>
+            <input type="text" name="Current City">
+          </div>
+          <div>
+            <label>State</label>
+            <input type="text" name="Current State">
+          </div>
+          <div>
+            <label>ZIP Code</label>
+            <input type="text" name="Current ZIP">
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>How long have you lived here? (years)</label>
+            <input type="number" name="Years at Current Address" min="0" step="1">
+          </div>
+          <div>
+            <label>Monthly Rent</label>
+            <input type="text" name="Current Rent">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>Section 3: Employment / Income</h2>
+      <fieldset>
+        <legend>Employment & Income</legend>
+        <label>Current Employer</label>
+        <input type="text" name="Employer Name">
+
+        <div class="inline-group">
+          <div>
+            <label>Employer Phone</label>
+            <input type="tel" name="Employer Phone">
+          </div>
+          <div>
+            <label>Position</label>
+            <input type="text" name="Position">
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>Monthly Income</label>
+            <input type="text" name="Monthly Income">
+          </div>
+          <div>
+            <label>Other Income (optional)</label>
+            <input type="text" name="Other Income">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>Section 4: Household</h2>
+      <fieldset>
+        <legend>Family / Household</legend>
+        <div class="inline-group">
+          <div>
+            <label>Husband’s Name (if applicable)</label>
+            <input type="text" name="Husband Name">
+          </div>
+          <div>
+            <label>Wife’s Name (if applicable)</label>
+            <input type="text" name="Wife Name">
+          </div>
+        </div>
+
+        <label>Total number of people who will live in the unit</label>
+        <input type="number" name="Household Size" min="1" step="1">
+      </fieldset>
+
+      <h2>Section 5: References</h2>
+      <fieldset>
+        <legend>References</legend>
+        <label>Reference 1 – Name</label>
+        <input type="text" name="Reference 1 Name">
+        <label>Reference 1 – Phone</label>
+        <input type="tel" name="Reference 1 Phone">
+
+        <label>Reference 2 – Name</label>
+        <input type="text" name="Reference 2 Name">
+        <label>Reference 2 – Phone</label>
+        <input type="tel" name="Reference 2 Phone">
+      </fieldset>
+
+      <h2>Section 6: Additional Information</h2>
+      <fieldset>
+        <legend>Notes</legend>
+        <label>Anything else you would like us to know?</label>
+        <textarea name="Additional Notes"></textarea>
+      </fieldset>
+
+      <!-- Children section (EN) -->
+      <h2>Section 7: Children</h2>
+      <fieldset class="children-section" data-children-container="en">
+        <legend>Children who will live in the unit</legend>
+        <div class="children-list"></div>
+        <button type="button" class="add-child-btn" data-lang-target="en">
+          ➕ Add Child
+        </button>
+      </fieldset>
+
+      <!-- Hidden template for EN children -->
+      <div class="child-template" data-child-template="en" style="display:none;">
+        <div class="child-row">
+          <div class="inline-group">
+            <div>
+              <label>Child Name</label>
+              <input type="text" name="Child Name">
+            </div>
+            <div>
+              <label>Date of Birth</label>
+              <input type="date" name="Child Date of Birth">
+            </div>
+          </div>
+          <div style="margin-top:6px;">
+            <button type="button" class="remove-child-btn">🗑 Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================
+         AMHARIC BLOCK
+         ========================== -->
+    <div class="lang-block" data-lang-block="am">
+      <h2>ክፍል 1፡ የእቃ ጠቃሚ መረጃ</h2>
+      <fieldset>
+        <legend>አመልካቹ</legend>
+        <label>ሙሉ ስም</label>
+        <input type="text" name="Applicant Full Name (Am)">
+
+        <div class="inline-group">
+          <div>
+            <label>የትውልድ ቀን</label>
+            <input type="date" name="Applicant Date of Birth (Am)">
+          </div>
+          <div>
+            <label>ፆታ</label>
+            <select name="Applicant Gender (Am)">
+              <option value="">መረጥ</option>
+              <option>ወንድ</option>
+              <option>ሴት</option>
+              <option>ሌላ</option>
+              <option>ማይገልጽ</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>ስልክ</label>
+            <input type="tel" name="Applicant Phone (Am)">
+          </div>
+          <div>
+            <label>ኢሜይል</label>
+            <input type="email" name="Applicant Email (Am)">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>ክፍል 2፡ የአሁኑ የመኖሪያ አድራሻ</h2>
+      <fieldset>
+        <legend>አድራሻ</legend>
+        <label>የመኖሪያ ጎዳና አድራሻ</label>
+        <input type="text" name="Current Street Address (Am)">
+
+        <div class="inline-group">
+          <div>
+            <label>ከተማ</label>
+            <input type="text" name="Current City (Am)">
+          </div>
+          <div>
+            <label>ግዛት / ክልል</label>
+            <input type="text" name="Current State (Am)">
+          </div>
+          <div>
+            <label>የፖስታ ኮድ</label>
+            <input type="text" name="Current ZIP (Am)">
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>እዚህ ስንት ዓመት ኖረህ? (ዓመታት)</label>
+            <input type="number" name="Years at Current Address (Am)" min="0" step="1">
+          </div>
+          <div>
+            <label>ወርሃዊ ኪራይ</label>
+            <input type="text" name="Current Rent (Am)">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>ክፍል 3፡ ሥራ / ገቢ</h2>
+      <fieldset>
+        <legend>ሥራ እና ገቢ</legend>
+        <label>የአሁኑ አሰሪ</label>
+        <input type="text" name="Employer Name (Am)">
+
+        <div class="inline-group">
+          <div>
+            <label>የአሰሪ ስልክ</label>
+            <input type="tel" name="Employer Phone (Am)">
+          </div>
+          <div>
+            <label>የስራ መደብ</label>
+            <input type="text" name="Position (Am)">
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>ወርሃዊ ገቢ</label>
+            <input type="text" name="Monthly Income (Am)">
+          </div>
+          <div>
+            <label>ተጨማሪ ገቢ (ከፈለጉ)</label>
+            <input type="text" name="Other Income (Am)">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>ክፍል 4፡ ቤተሰብ</h2>
+      <fieldset>
+        <legend>ቤተሰብ / ቤተሰብ አባላት</legend>
+        <div class="inline-group">
+          <div>
+            <label>የባል ስም (ካለ)</label>
+            <input type="text" name="Husband Name (Am)">
+          </div>
+          <div>
+            <label>የሚስት ስም (ካለ)</label>
+            <input type="text" name="Wife Name (Am)">
+          </div>
+        </div>
+
+        <label>በክፍሉ ውስጥ የሚኖሩ አባላት ጠቅላላ ብዛት</label>
+        <input type="number" name="Household Size (Am)" min="1" step="1">
+      </fieldset>
+
+      <h2>ክፍል 5፡ ማመሳከሪያዎች</h2>
+      <fieldset>
+        <legend>ማመሳከሪያዎች</legend>
+        <label>ማመሳከሪያ 1 – ስም</label>
+        <input type="text" name="Reference 1 Name (Am)">
+        <label>ማመሳከሪያ 1 – ስልክ</label>
+        <input type="tel" name="Reference 1 Phone (Am)">
+
+        <label>ማመሳከሪያ 2 – ስም</label>
+        <input type="text" name="Reference 2 Name (Am)">
+        <label>ማመሳከሪያ 2 – ስልክ</label>
+        <input type="tel" name="Reference 2 Phone (Am)">
+      </fieldset>
+
+      <h2>ክፍል 6፡ ተጨማሪ መረጃ</h2>
+      <fieldset>
+        <legend>ማስታወቂያ</legend>
+        <label>ተጨማሪ መረጃ ካለ፣ እባክዎን ይጻፉ</label>
+        <textarea name="Additional Notes (Am)"></textarea>
+      </fieldset>
+
+      <!-- Children section (AM) -->
+      <h2>ክፍል 7፡ ልጆች</h2>
+      <fieldset class="children-section" data-children-container="am">
+        <legend>ከእርስዎ ጋር በክፍሉ ውስጥ የሚኖሩ ልጆች</legend>
+        <div class="children-list"></div>
+        <button type="button" class="add-child-btn" data-lang-target="am">
+          ➕ ልጅ አክል
+        </button>
+      </fieldset>
+
+      <!-- Hidden template for AM children -->
+      <div class="child-template" data-child-template="am" style="display:none;">
+        <div class="child-row">
+          <div class="inline-group">
+            <div>
+              <label>የልጅ ስም</label>
+              <input type="text" name="Child Name (Am)">
+            </div>
+            <div>
+              <label>የትውልድ ቀን</label>
+              <input type="date" name="Child Date of Birth (Am)">
+            </div>
+          </div>
+          <div style="margin-top:6px;">
+            <button type="button" class="remove-child-btn">🗑 አስወግድ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================
+         AFAAN OROMOO BLOCK
+         ========================== -->
+    <div class="lang-block" data-lang-block="om">
+      <h2>Kutaa 1: Odeeffannoo Nama Galmaa’aa</h2>
+      <fieldset>
+        <legend>Nama Galmaa’aa</legend>
+        <label>Maqaa Guutuu</label>
+        <input type="text" name="Applicant Full Name (Om)">
+
+        <div class="inline-group">
+          <div>
+            <label>Guyyaa Dhalootaa</label>
+            <input type="date" name="Applicant Date of Birth (Om)">
+          </div>
+          <div>
+            <label>Saala</label>
+            <select name="Applicant Gender (Om)">
+              <option value="">Filadhu</option>
+              <option>Dhiira</option>
+              <option>Dhala</option>
+              <option>Kan biraa</option>
+              <option>Hin ibsu</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>Lakkoofsa Bilbilaa</label>
+            <input type="tel" name="Applicant Phone (Om)">
+          </div>
+          <div>
+            <label>Imeelii</label>
+            <input type="email" name="Applicant Email (Om)">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>Kutaa 2: Teessoo Ammee</h2>
+      <fieldset>
+        <legend>Teessoo</legend>
+        <label>Teessoo Daandii</label>
+        <input type="text" name="Current Street Address (Om)">
+
+        <div class="inline-group">
+          <div>
+            <label>Magaalaa</label>
+            <input type="text" name="Current City (Om)">
+          </div>
+          <div>
+            <label>Naannoo / Staat</label>
+            <input type="text" name="Current State (Om)">
+          </div>
+          <div>
+            <label>Lakk. Poostaa</label>
+            <input type="text" name="Current ZIP (Om)">
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>Akkam jiraatte achi keessa? (waggaa)</label>
+            <input type="number" name="Years at Current Address (Om)" min="0" step="1">
+          </div>
+          <div>
+            <label>Kiraayii ji’a ji’aan</label>
+            <input type="text" name="Current Rent (Om)">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>Kutaa 3: Hojii / Galii</h2>
+      <fieldset>
+        <legend>Hojii fi Galii</legend>
+        <label>Hojjabaa Ammee</label>
+        <input type="text" name="Employer Name (Om)">
+
+        <div class="inline-group">
+          <div>
+            <label>Bilbila Hojjabaa</label>
+            <input type="tel" name="Employer Phone (Om)">
+          </div>
+          <div>
+            <label>Iddoo Hojii</label>
+            <input type="text" name="Position (Om)">
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>Galii ji’a ji’aan</label>
+            <input type="text" name="Monthly Income (Om)">
+          </div>
+          <div>
+            <label>Galii dabalataa (yoo jiraate)</label>
+            <input type="text" name="Other Income (Om)">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>Kutaa 4: Maatii</h2>
+      <fieldset>
+        <legend>Maatii / Jiraattota</legend>
+        <div class="inline-group">
+          <div>
+            <label>Maqaa Abbaa Warraa (yoo jiraate)</label>
+            <input type="text" name="Husband Name (Om)">
+          </div>
+          <div>
+            <label>Maqaa Haadha Warraa (yoo jiraate)</label>
+            <input type="text" name="Wife Name (Om)">
+          </div>
+        </div>
+
+        <label>Namoota manneen keessa jiraatan waliigala lakkoofsa</label>
+        <input type="number" name="Household Size (Om)" min="1" step="1">
+      </fieldset>
+
+      <h2>Kutaa 5: Ragaa Kennitoonni</h2>
+      <fieldset>
+        <legend>Ragaa Kennitoonni</legend>
+        <label>Ragaa 1 – Maqaa</label>
+        <input type="text" name="Reference 1 Name (Om)">
+        <label>Ragaa 1 – Bilbila</label>
+        <input type="tel" name="Reference 1 Phone (Om)">
+
+        <label>Ragaa 2 – Maqaa</label>
+        <input type="text" name="Reference 2 Name (Om)">
+        <label>Ragaa 2 – Bilbila</label>
+        <input type="tel" name="Reference 2 Phone (Om)">
+      </fieldset>
+
+      <h2>Kutaa 6: Odeeffannoo Dabalataa</h2>
+      <fieldset>
+        <legend>Yaada Dabalataa</legend>
+        <label>Odeeffannoo dabalataa yoo qabaattan asitti barreessaa.</label>
+        <textarea name="Additional Notes (Om)"></textarea>
+      </fieldset>
+
+      <!-- Children section (OM) -->
+      <h2>Kutaa 7: Ijoollee</h2>
+      <fieldset class="children-section" data-children-container="om">
+        <legend>Ijoollee mana kircha keessa jiraatan</legend>
+        <div class="children-list"></div>
+        <button type="button" class="add-child-btn" data-lang-target="om">
+          ➕ Ijoollee Dabaluu
+        </button>
+      </fieldset>
+
+      <!-- Hidden template for OM children -->
+      <div class="child-template" data-child-template="om" style="display:none;">
+        <div class="child-row">
+          <div class="inline-group">
+            <div>
+              <label>Maqaa Ijoollee</label>
+              <input type="text" name="Child Name (Om)">
+            </div>
+            <div>
+              <label>Guyyaa Dhalootaa</label>
+              <input type="date" name="Child Date of Birth (Om)">
+            </div>
+          </div>
+          <div style="margin-top:6px;">
+            <button type="button" class="remove-child-btn">🗑 Haqi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================
+         TIGRIGNA BLOCK
+         ========================== -->
+    <div class="lang-block" data-lang-block="ti">
+      <h2>ክፍሊ 1፡ መረዳእታ ዓመልከቲ</h2>
+      <fieldset>
+        <legend>ዓመልከቲ</legend>
+        <label>ሙሉእ ስም</label>
+        <input type="text" name="Applicant Full Name (Ti)">
+
+        <div class="inline-group">
+          <div>
+            <label>ዕለት መወለዲ</label>
+            <input type="date" name="Applicant Date of Birth (Ti)">
+          </div>
+          <div>
+            <label>ፆታ</label>
+            <select name="Applicant Gender (Ti)">
+              <option value="">ምረፅ</option>
+              <option>ወዲ</option>
+              <option>ሰበይቲ</option>
+              <option>ካልእ</option>
+              <option>ኣይትብል</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>ቁጽሪ ስልኪ</label>
+            <input type="tel" name="Applicant Phone (Ti)">
+          </div>
+          <div>
+            <label>ኢመይል</label>
+            <input type="email" name="Applicant Email (Ti)">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>ክፍሊ 2፡ ናይ አሁን ኣድራሻ</h2>
+      <fieldset>
+        <legend>ኣድራሻ</legend>
+        <label>ኣድራሻ መንገዲ</label>
+        <input type="text" name="Current Street Address (Ti)">
+
+        <div class="inline-group">
+          <div>
+            <label>ከተማ</label>
+            <input type="text" name="Current City (Ti)">
+          </div>
+          <div>
+            <label>መንግስቲ / ክልል</label>
+            <input type="text" name="Current State (Ti)">
+          </div>
+          <div>
+            <label>ፖስታ ኮድ</label>
+            <input type="text" name="Current ZIP (Ti)">
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>እንታይ መጠን ዓመታት ኣብዚ ትኖር? (ዓመታት)</label>
+            <input type="number" name="Years at Current Address (Ti)" min="0" step="1">
+          </div>
+          <div>
+            <label>ናይ ወርሒ ኪራይ</label>
+            <input type="text" name="Current Rent (Ti)">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>ክፍሊ 3፡ ስራሕ / ወርሒ ዕዳጋ</h2>
+      <fieldset>
+        <legend>ስራሕን ዕዳጋን</legend>
+        <label>ናይ አሁን ኣስራሪ</label>
+        <input type="text" name="Employer Name (Ti)">
+
+        <div class="inline-group">
+          <div>
+            <label>ቁጽሪ ስልኪ ኣስራሪ</label>
+            <input type="tel" name="Employer Phone (Ti)">
+          </div>
+          <div>
+            <label>ስራሕ ስም</label>
+            <input type="text" name="Position (Ti)">
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>ወርሓዊ ዕዳጋ</label>
+            <input type="text" name="Monthly Income (Ti)">
+          </div>
+          <div>
+            <label>ካልእ ዕዳጋ (እንተሃሎ)</label>
+            <input type="text" name="Other Income (Ti)">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>ክፍሊ 4፡ ስድራ</h2>
+      <fieldset>
+        <legend>ስድራ / ህዝቢ ቤት</legend>
+        <div class="inline-group">
+          <div>
+            <label>ስም ባዕል (እንተሃሎ)</label>
+            <input type="text" name="Husband Name (Ti)">
+          </div>
+          <div>
+            <label>ስም ሚስቲ (እንተሃሎ)</label>
+            <input type="text" name="Wife Name (Ti)">
+          </div>
+        </div>
+
+        <label>ኣብ ጉዳይ ቤት ዝኖሩ ጠቕላላ ብዝሒ ሰባት</label>
+        <input type="number" name="Household Size (Ti)" min="1" step="1">
+      </fieldset>
+
+      <h2>ክፍሊ 5፡ መመርሒታት</h2>
+      <fieldset>
+        <legend>መመርሒታት</legend>
+        <label>መመርሒ 1 – ስም</label>
+        <input type="text" name="Reference 1 Name (Ti)">
+        <label>መመርሒ 1 – ቁጽሪ ስልኪ</label>
+        <input type="tel" name="Reference 1 Phone (Ti)">
+
+        <label>መመርሒ 2 – ስም</label>
+        <input type="text" name="Reference 2 Name (Ti)">
+        <label>መመርሒ 2 – ቁጽሪ ስልኪ</label>
+        <input type="tel" name="Reference 2 Phone (Ti)">
+      </fieldset>
+
+      <h2>ክፍሊ 6፡ ተወሳኺ መረዳእታ</h2>
+      <fieldset>
+        <legend>ማስታወሻ</legend>
+        <label>ሓበሬታ ተወሳኺ እንተሃለዎ፣ ኣብዚ ጻፍ።</label>
+        <textarea name="Additional Notes (Ti)"></textarea>
+      </fieldset>
+
+      <!-- Children section (TI) -->
+      <h2>ክፍሊ 7፡ ወዲኦም</h2>
+      <fieldset class="children-section" data-children-container="ti">
+        <legend>ኣብ ቤት ዝኖሩ ወዲኦም</legend>
+        <div class="children-list"></div>
+        <button type="button" class="add-child-btn" data-lang-target="ti">
+          ➕ ወዲ ወስኽ
+        </button>
+      </fieldset>
+
+      <!-- Hidden template for TI children -->
+      <div class="child-template" data-child-template="ti" style="display:none;">
+        <div class="child-row">
+          <div class="inline-group">
+            <div>
+              <label>ስም ወዲ</label>
+              <input type="text" name="Child Name (Ti)">
+            </div>
+            <div>
+              <label>ዕለት መወለዲ</label>
+              <input type="date" name="Child Date of Birth (Ti)">
+            </div>
+          </div>
+          <div style="margin-top:6px;">
+            <button type="button" class="remove-child-btn">🗑 ኣጥፍእ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================
+         SOMALI BLOCK
+         ========================== -->
+    <div class="lang-block" data-lang-block="so">
+      <h2>Qaybta 1: Macluumaadka Codsadaha</h2>
+      <fieldset>
+        <legend>Codsade</legend>
+        <label>Magaca oo Dhan</label>
+        <input type="text" name="Applicant Full Name (So)">
+
+        <div class="inline-group">
+          <div>
+            <label>Taariikhda Dhalashada</label>
+            <input type="date" name="Applicant Date of Birth (So)">
+          </div>
+          <div>
+            <label>Jinsiga</label>
+            <select name="Applicant Gender (So)">
+              <option value="">Dooro</option>
+              <option>Lab</option>
+              <option>Dheddig</option>
+              <option>Mid kale</option>
+              <option>Ma sheegin</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>Lambarka Telefoonka</label>
+            <input type="tel" name="Applicant Phone (So)">
+          </div>
+          <div>
+            <label>Imeel</label>
+            <input type="email" name="Applicant Email (So)">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>Qaybta 2: Cinwaanka Hadda</h2>
+      <fieldset>
+        <legend>Cinwaan</legend>
+        <label>Cinwaanka Waddada</label>
+        <input type="text" name="Current Street Address (So)">
+
+        <div class="inline-group">
+          <div>
+            <label>Magaalo</label>
+            <input type="text" name="Current City (So)">
+          </div>
+          <div>
+            <label>Gobol / State</label>
+           <input type="text" name="Current State (So)">
+          </div>
+          <div>
+            <label>Lambarka Boostada</label>
+            <input type="text" name="Current ZIP (So)">
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>Intee sano ayaad halkan ku nooleyd?</label>
+            <input type="number" name="Years at Current Address (So)" min="0" step="1">
+          </div>
+          <div>
+            <label>Kirada bil kasta</label>
+            <input type="text" name="Current Rent (So)">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>Qaybta 3: Shaqo / Dakhliga</h2>
+      <fieldset>
+        <legend>Shaqo iyo Dakhli</legend>
+        <label>Goobta Shaqada Hadda</label>
+        <input type="text" name="Employer Name (So)">
+
+        <div class="inline-group">
+          <div>
+            <label>Telefoonka Shaqada</label>
+            <input type="tel" name="Employer Phone (So)">
+          </div>
+          <div>
+            <label>Jagada</label>
+            <input type="text" name="Position (So)">
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div>
+            <label>Dakhliga bil kasta</label>
+            <input type="text" name="Monthly Income (So)">
+          </div>
+          <div>
+            <label>Dakhli dheeri ah (haddii uu jiro)</label>
+            <input type="text" name="Other Income (So)">
+          </div>
+        </div>
+      </fieldset>
+
+      <h2>Qaybta 4: Qoyska</h2>
+      <fieldset>
+        <legend>Qoys / Dadka Guriga Degan</legend>
+        <div class="inline-group">
+          <div>
+            <label>Magaca Ninka (haddii uu jiro)</label>
+            <input type="text" name="Husband Name (So)">
+          </div>
+          <div>
+            <label>Magaca Xaaska (haddii ay jirto)</label>
+            <input type="text" name="Wife Name (So)">
+          </div>
+        </div>
+
+        <label>Wadarta dadka guriga deggan</label>
+        <input type="number" name="Household Size (So)" min="1" step="1">
+      </fieldset>
+
+      <h2>Qaybta 5: Tixraacyo</h2>
+      <fieldset>
+        <legend>Tixraacyo</legend>
+        <label>Tixraac 1 – Magaca</label>
+        <input type="text" name="Reference 1 Name (So)">
+        <label>Tixraac 1 – Telefoon</label>
+        <input type="tel" name="Reference 1 Phone (So)">
+
+        <label>Tixraac 2 – Magaca</label>
+        <input type="text" name="Reference 2 Name (So)">
+        <label>Tixraac 2 – Telefoon</label>
+        <input type="tel" name="Reference 2 Phone (So)">
+      </fieldset>
+
+      <h2>Qaybta 6: Macluumaad Dheeraad ah</h2>
+      <fieldset>
+        <legend>Faahfaahin Dheeraad ah</legend>
+        <label>Haddii aad leedahay macluumaad dheeraad ah, fadlan halkan ku qor.</label>
+        <textarea name="Additional Notes (So)"></textarea>
+      </fieldset>
+
+      <!-- Children section (SO) -->
+      <h2>Qaybta 7: Carruurta</h2>
+      <fieldset class="children-section" data-children-container="so">
+        <legend>Carruurta guriga degi doonta</legend>
+        <div class="children-list"></div>
+        <button type="button" class="add-child-btn" data-lang-target="so">
+          ➕ Carruur Ku dar
+        </button>
+      </fieldset>
+
+      <!-- Hidden template for SO children -->
+      <div class="child-template" data-child-template="so" style="display:none;">
+        <div class="child-row">
+          <div class="inline-group">
+            <div>
+              <label>Magaca Ilmaha</label>
+              <input type="text" name="Child Name (So)">
+            </div>
+            <div>
+              <label>Taariikhda Dhalashada</label>
+              <input type="date" name="Child Date of Birth (So)">
+            </div>
+          </div>
+          <div style="margin-top:6px;">
+            <button type="button" class="remove-child-btn">🗑 Ka saar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================
+         Shared submit options
+         ===================================== -->
+    <hr style="margin: 20px 0 14px;">
+
+    <div class="submit-section">
+      <h2>Submit Options</h2>
+
+      <!-- Multilingual instructions -->
+      <p class="lang-submit-text active" data-submit-lang="en">
+        Please review your information. When you are ready, you may print or save a PDF for your records, and/or submit the form by email.
+      </p>
+      <p class="lang-submit-text" data-submit-lang="am">
+        እባክዎን መረጃዎን ያረጋግጡ። ከዚያ በኋላ ለመመዝገብ ማተም ወይም ወደ PDF ማስቀመጥ ይችላሉ፣ ወይም ቅፁን በኢሜይል መላክ ይችላሉ።
+      </p>
+      <p class="lang-submit-text" data-submit-lang="om">
+        Maalummaa kee ilaali. Erga qopheessite booda, galmee kee akka ragaa ta’u maxxansi ykn PDF tursi, yookiin emailiin ergi.
+      </p>
+      <p class="lang-submit-text" data-submit-lang="ti">
+        ሓበሬታኻ ተመርምር። ንመዝገብ ዝበቃ መታትን PDF ምውሳንን ወይስ ቅፁ ብኢመይል ምስተላእኽ ትኽእል።
+      </p>
+      <p class="lang-submit-text" data-submit-lang="so">
+        Fadlan xogtaada dib u eeg. Marka aad diyaar tahay, waad daabacan kartaa ama PDF u kaydsan kartaa, ama iimayl ayaad ku gudbin kartaa.
+      </p>
+
+      <div class="submit-buttons">
+        <button type="button" class="btn-print" id="printButton">
+          🖨️ Print / Save as PDF
+        </button>
+
+        <button type="submit" class="btn-submit">
+          📧 Submit via Email
+        </button>
+
+        <button type="reset" class="btn-reset">
+          🔄 Reset Form
+        </button>
+      </div>
+
+      <p style="margin-top: 10px; font-size: 12px; color: #555;">
+        • “Print / Save as PDF” opens your browser’s print dialog (you can choose “Save as PDF”).<br>
+        • “Submit via Email” opens your email app with the form data in the email body (requires a configured email client).<br>
+        • “Reset Form” clears all fields and selections.
+      </p>
+    </div>
+  </form>
+</div>
+
+<script>
+  // =====================================
+  // Language display names (native)
+  // =====================================
+  const LANGUAGE_VALUES = {
+    en: "English",
+    am: "አማርኛ",
+    om: "Afaan Oromoo",
+    ti: "ትግርኛ",
+    so: "Soomaali"
+  };
+
+  // References to language-related elements
+  const languageSelect = document.getElementById('languageSelect');
+  const languageField = document.getElementById('languageField');
+  const langBlocks = document.querySelectorAll('.lang-block');
+  const submitTexts = document.querySelectorAll('.lang-submit-text');
+
+  // =====================================
+  // Initialize language (English default)
+  // =====================================
+  languageSelect.value = 'en';
+  languageField.value = LANGUAGE_VALUES['en'];
+
+  // =====================================
+  // Handle language changes via dropdown
+  // =====================================
+  languageSelect.addEventListener('change', () => {
+    const lang = languageSelect.value;
+
+    // Update hidden language field
+    if (LANGUAGE_VALUES[lang]) {
+      languageField.value = LANGUAGE_VALUES[lang];
+    }
+
+    // Switch visible language blocks
+    langBlocks.forEach(block => {
+      block.classList.toggle('active', block.getAttribute('data-lang-block') === lang);
+    });
+
+    // Switch submit instructions
+    submitTexts.forEach(p => {
+      p.classList.toggle('active', p.getAttribute('data-submit-lang') === lang);
+    });
+  });
+
+  // =====================================
+  // Children section dynamic behavior
+  // =====================================
+  function setupChildrenForLanguage(langCode) {
+    const container = document.querySelector('[data-children-container="' + langCode + '"]');
+    if (!container) return;
+
+    const list = container.querySelector('.children-list');
+    const template = document.querySelector('[data-child-template="' + langCode + '"]');
+    const addBtn = container.querySelector('.add-child-btn');
+
+    if (!addBtn) return;
+
+    addBtn.addEventListener('click', () => {
+      if (!template || !template.firstElementChild) return;
+
+      const clone = template.firstElementChild.cloneNode(true);
+      const removeBtn = clone.querySelector('.remove-child-btn');
+
+      if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+          clone.remove();
+        });
+      }
+      list.appendChild(clone);
+    });
+  }
+
+  // Setup children sections for all languages
+  ['en', 'am', 'om', 'ti', 'so'].forEach(setupChildrenForLanguage);
+
+  // =====================================
+  // Print / Save as PDF
+  // =====================================
+  document.getElementById('printButton').addEventListener('click', () => {
+    window.print();
+  });
+
+  // =====================================
+  // Submit via Email (using mailto)
+  // =====================================
+  const rentalForm = document.getElementById('rentalForm');
+
+  rentalForm.addEventListener('submit', function (e) {
+    e.preventDefault(); // Prevent normal form submission
+
+    const confirmed = confirm("Are you sure you want to submit this rental application via email?");
+    if (!confirmed) {
+      return;
+    }
+
+    // Collect form data
+    const formData = new FormData(rentalForm);
+    let bodyLines = [];
+
+    // Build text body in "Label: value" format
+    for (const [name, value] of formData.entries()) {
+      if (value !== null && value !== "") {
+        bodyLines.push(name + ": " + value);
+      }
+    }
+
+    const body = encodeURIComponent(bodyLines.join('\n'));
+    const subject = encodeURIComponent("Rental Application");
+    const mailto = "mailto:tefe42020@gmail.com?subject=" + subject + "&body=" + body;
+
+    // Open default email client with prefilled data
+    window.location.href = mailto;
+  });
+</script>
+
+</body>
+</html>
